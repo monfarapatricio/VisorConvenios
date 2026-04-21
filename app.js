@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         const savedData = await localforage.getItem('convenios_db');
         if (savedData && savedData.providers.length > 0) {
-            db = savedData;
+            db = { ...db, ...savedData }; // Mezclar con valores por defecto (como currentSort)
             initDashboard();
         } else {
             showEmptyState();
@@ -56,8 +56,8 @@ folderInput.addEventListener('change', async (e) => {
 
     showLoadingState();
     
-    // Resetear base de datos
-    db = { providers: [], practices: {}, normas: {} };
+    // Resetear base de datos manteniendo configuración de orden
+    db = { ...db, providers: [], practices: {}, normas: {} };
     
     try {
         // Encontrar las carpetas (Prestadores)
@@ -309,9 +309,10 @@ function renderTable() {
 
         // Tipo (Ambulatorio / Internacion)
         let tipo = '';
-        if (p.ambu_inter === 'A') tipo = 'Ambulatorio';
-        else if (p.ambu_inter === 'I') tipo = 'Internación';
-        else tipo = p.ambu_inter || '-';
+        const rawTipo = p.ambu_inter_clean || p.ambu_inter || '';
+        if (rawTipo === 'A') tipo = 'Ambulatorio';
+        else if (rawTipo === 'I') tipo = 'Internación';
+        else tipo = rawTipo || '-';
 
         // Check Normas
         const codeNorm = normalizeCode(p.prestac);
