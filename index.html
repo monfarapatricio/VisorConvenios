@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visor de Convenios Médicos</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="navbar-brand">
+            <span class="material-symbols-outlined logo-icon">medical_services</span>
+            <h1>Visor de Convenios</h1>
+        </div>
+        <div class="navbar-actions">
+            <button id="btnUpdateData" class="btn btn-outline">
+                <span class="material-symbols-outlined">upload_file</span>
+                Actualizar Datos
+            </button>
+            <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;">
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        
+        <!-- Estado de carga -->
+        <div id="loadingState" class="hidden loading-container">
+            <div class="spinner"></div>
+            <p id="loadingText">Cargando y procesando convenios...</p>
+        </div>
+
+        <!-- Pantalla de bienvenida / sin datos -->
+        <div id="emptyState" class="empty-state">
+            <div class="empty-icon">
+                <span class="material-symbols-outlined">folder_open</span>
+            </div>
+            <h2>No hay datos cargados</h2>
+            <p>Por favor, actualice los datos seleccionando la carpeta <strong>CONVENIOS</strong> de su computadora.</p>
+            <button id="btnEmptyUpdate" class="btn btn-primary btn-large">
+                Seleccionar Carpeta
+            </button>
+        </div>
+
+        <!-- Dashboard (Oculto inicialmente) -->
+        <div id="dashboard" class="hidden">
+            <!-- Controles -->
+            <div class="controls-bar">
+                <div class="form-group">
+                    <label for="providerSelect">Prestador</label>
+                    <div class="select-wrapper">
+                        <select id="providerSelect">
+                            <option value="">Seleccione un prestador...</option>
+                        </select>
+                        <span class="material-symbols-outlined select-icon">expand_more</span>
+                    </div>
+                </div>
+
+                <div class="form-group search-group">
+                    <label for="searchInput">Buscar Prestación</label>
+                    <div class="input-wrapper">
+                        <span class="material-symbols-outlined input-icon">search</span>
+                        <input type="text" id="searchInput" placeholder="Buscar por código o nombre...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de datos -->
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th width="12%">Código</th>
+                            <th width="45%">Denominación</th>
+                            <th width="15%" class="text-right">Valor</th>
+                            <th width="15%">Tipo</th>
+                            <th width="13%" class="text-center">Normas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Las filas se generarán por JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="noResults" class="hidden empty-state mini">
+                <span class="material-symbols-outlined">search_off</span>
+                <p>No se encontraron prestaciones para esta búsqueda.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Normas -->
+    <div id="normasModal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modalTitle">Normas de la Prestación</h3>
+                    <p id="modalSubtitle" class="text-muted">Código: <span></span></p>
+                </div>
+                <button class="btn-close" id="btnCloseModal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="btnModalOk">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Librerías Externas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+    
+    <!-- Código de la Aplicación -->
+    <script src="app.js"></script>
+</body>
+</html>
