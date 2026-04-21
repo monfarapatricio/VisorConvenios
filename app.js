@@ -88,7 +88,7 @@ folderInput.addEventListener('change', async (e) => {
 
         // Procesar archivos por prestador
         for (const [providerName, providerFiles] of foldersMap) {
-            db.practices[providerName] = [];
+            const practicesMap = new Map();
             db.normas[providerName] = {};
 
             for (const file of providerFiles) {
@@ -119,20 +119,28 @@ folderInput.addEventListener('change', async (e) => {
                     results.forEach(row => {
                         const prestac = getVal(row, 'prestac');
                         const deno = getVal(row, 'deno');
-                        const ambuInter = getVal(row, 'ambu_inter');
+                        const ambuInter = (getVal(row, 'ambu_inter') || '').trim().toUpperCase();
 
                         if (prestac && deno) { 
-                            // Ignorar las prácticas ambulatorias para evitar duplicados
-                            if (ambuInter !== undefined && ambuInter.trim().toUpperCase() === 'A') {
-                                return;
-                            }
                             row.prestac = prestac; // Set limpio por si tenía BOM
                             row.deno = deno;
-                            db.practices[providerName].push(row);
+                            row.ambu_inter_clean = ambuInter;
+                            
+                            const existing = practicesMap.get(prestac);
+                            if (existing) {
+                                // Si ya existe y el nuevo es 'I', lo reemplazamos (priorizamos Internación)
+                                if (ambuInter === 'I' && existing.ambu_inter_clean !== 'I') {
+                                    practicesMap.set(prestac, row);
+                                }
+                            } else {
+                                practicesMap.set(prestac, row);
+                            }
                         }
                     });
                 }
             }
+            // Guardar el array final sin duplicados
+            db.practices[providerName] = Array.from(practicesMap.values());
         }
 
         // Guardar en IndexedDB para futuras visitas
