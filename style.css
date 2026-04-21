@@ -76,6 +76,11 @@ body {
     color: var(--primary);
 }
 
+.logo-img {
+    height: 32px;
+    width: auto;
+}
+
 .navbar-brand h1 {
     font-size: 1.25rem;
     font-weight: 700;
@@ -288,6 +293,36 @@ th {
     letter-spacing: 0.05em;
     color: var(--text-muted);
     border-bottom: 1px solid var(--border);
+}
+
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 2.5rem !important;
+}
+
+th.sortable:hover {
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+
+.sort-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem;
+    color: var(--text-muted);
+}
+
+th.sortable:hover .sort-icon {
+    color: var(--primary);
+}
+
+th.sort-asc .sort-icon,
+th.sort-desc .sort-icon {
+    color: var(--primary);
 }
 
 td {

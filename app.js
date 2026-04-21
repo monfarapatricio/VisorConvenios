@@ -23,7 +23,8 @@ const modalBody = document.getElementById('modalBody');
 let db = {
     providers: [],    // Nombres de los prestadores (carpetas)
     practices: {},    // practices[providerName] = array of practices
-    normas: {}        // normas[providerName][normalizedCode] = norma object
+    normas: {},       // normas[providerName][normalizedCode] = norma object
+    currentSort: { column: 'deno', direction: 'asc' } // Orden por defecto
 };
 
 let currentProvider = '';
@@ -202,6 +203,20 @@ function initDashboard() {
 providerSelect.addEventListener('change', handleProviderChange);
 searchInput.addEventListener('input', handleSearch);
 
+// Event listeners para ordenamiento de tabla
+document.querySelectorAll('th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+        const column = th.dataset.column;
+        if (db.currentSort.column === column) {
+            db.currentSort.direction = db.currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            db.currentSort.column = column;
+            db.currentSort.direction = 'asc';
+        }
+        renderTable();
+    });
+});
+
 function handleProviderChange() {
     currentProvider = providerSelect.value;
     searchInput.value = ''; // Reset search on provider change
@@ -232,9 +247,42 @@ function renderTable() {
         });
     }
 
-    // Ordenar alfabéticamente por denominación o por código (aquí por código numérico)
-    filtered.sort((a, b) => {
-        return normalizeCode(a.prestac).localeCompare(normalizeCode(b.prestac), undefined, {numeric: true});
+    // Ordenamiento dinámico
+    const { column, direction } = db.currentSort;
+    if (column) {
+        filtered.sort((a, b) => {
+            let valA = a[column];
+            let valB = b[column];
+
+            // Manejo especial para valores numéricos
+            if (column === 'valor') {
+                valA = parseFloat(valA) || 0;
+                valB = parseFloat(valB) || 0;
+                return direction === 'asc' ? valA - valB : valB - valA;
+            } 
+            
+            // Caso general (strings)
+            valA = removeAccents(String(valA || '').toLowerCase());
+            valB = removeAccents(String(valB || '').toLowerCase());
+            
+            if (valA < valB) return direction === 'asc' ? -1 : 1;
+            if (valA > valB) return direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+    }
+
+    // Actualizar UI de los encabezados (iconos de flecha)
+    document.querySelectorAll('th.sortable').forEach(th => {
+        const col = th.dataset.column;
+        const icon = th.querySelector('.sort-icon');
+        th.classList.remove('sort-asc', 'sort-desc');
+        
+        if (col === column) {
+            th.classList.add(direction === 'asc' ? 'sort-asc' : 'sort-desc');
+            icon.textContent = direction === 'asc' ? 'expand_less' : 'expand_more';
+        } else {
+            icon.textContent = 'unfold_more';
+        }
     });
 
     tableBody.innerHTML = '';

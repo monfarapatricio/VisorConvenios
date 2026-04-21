@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visor de Convenios Médicos</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +23,7 @@
     <!-- Navbar -->
     <header class="navbar">
         <div class="navbar-brand">
-            <span class="material-symbols-outlined logo-icon">medical_services</span>
+            <img src="img/logo-smmp-color-new.svg" alt="Logo" class="logo-img">
             <h1>Visor de Convenios</h1>
         </div>
         <div class="navbar-actions">
@@ -81,10 +84,22 @@
                 <table id="dataTable">
                     <thead>
                         <tr>
-                            <th width="12%">Código</th>
-                            <th width="45%">Denominación</th>
-                            <th width="15%" class="text-right">Valor</th>
-                            <th width="15%">Tipo</th>
+                            <th width="12%" class="sortable" data-column="prestac">
+                                Código 
+                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                            </th>
+                            <th width="45%" class="sortable" data-column="deno">
+                                Denominación
+                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                            </th>
+                            <th width="15%" class="text-right sortable" data-column="valor">
+                                Valor
+                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                            </th>
+                            <th width="15%" class="sortable" data-column="ambu_inter_clean">
+                                Tipo
+                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                            </th>
                             <th width="13%" class="text-center">Normas</th>
                         </tr>
                     </thead>
