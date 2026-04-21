@@ -318,6 +318,16 @@ function renderTable() {
         const codeNorm = normalizeCode(p.prestac);
         const norma = db.normas[currentProvider]?.[codeNorm];
 
+        tr.style.cursor = 'pointer';
+        tr.title = 'Haga clic para copiar';
+        tr.addEventListener('click', (e) => {
+            // No copiar si se hace clic en el botón de normas
+            if (e.target.closest('.badge-norma')) return;
+            
+            const textToCopy = `${p.prestac} - ${p.deno}`;
+            copyToClipboard(textToCopy, tr);
+        });
+
         tr.innerHTML = `
             <td><strong>${p.prestac}</strong></td>
             <td>${p.deno}</td>
@@ -427,4 +437,23 @@ function normalizeCode(code) {
 function removeAccents(str) {
     if (!str) return '';
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// Nueva función para copiar al portapapeles
+async function copyToClipboard(text, rowElement) {
+    try {
+        await navigator.clipboard.writeText(text);
+        
+        // Feedback visual temporal
+        const originalBg = rowElement.style.backgroundColor;
+        rowElement.style.backgroundColor = 'rgba(46, 125, 50, 0.1)'; // Verde suave
+        
+        // Crear un pequeño tooltip o toast flotante si se desea, por ahora solo cambio de color
+        setTimeout(() => {
+            rowElement.style.backgroundColor = originalBg;
+        }, 500);
+        
+    } catch (err) {
+        console.error('Error al copiar:', err);
+    }
 }
