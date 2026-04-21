@@ -285,13 +285,13 @@ table {
 }
 
 th {
-    background-color: var(--bg-hover);
-    padding: 0.75rem 1.5rem;
+    background-color: var(--primary);
+    padding: 0.875rem 1.5rem;
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--text-muted);
+    color: white;
     border-bottom: 1px solid var(--border);
 }
 
@@ -303,8 +303,8 @@ th.sortable {
 }
 
 th.sortable:hover {
-    background-color: var(--primary-light);
-    color: var(--primary);
+    background-color: #b71c1c; /* Un rojo un poco más oscuro al pasar el mouse */
+    color: white;
 }
 
 .sort-icon {
@@ -313,16 +313,16 @@ th.sortable:hover {
     top: 50%;
     transform: translateY(-50%);
     font-size: 1.1rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 th.sortable:hover .sort-icon {
-    color: var(--primary);
+    color: white;
 }
 
 th.sort-asc .sort-icon,
 th.sort-desc .sort-icon {
-    color: var(--primary);
+    color: white;
 }
 
 td {
@@ -341,8 +341,12 @@ tbody tr {
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
+tbody tr:nth-child(even) {
+    background-color: #fcfcfc;
+}
+
 tbody tr:hover {
-    background-color: var(--bg-hover);
+    background-color: #f5f5f5 !important;
 }
 
 .text-right {
