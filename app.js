@@ -20,7 +20,10 @@ const modalSubtitle = document.querySelector('#modalSubtitle span');
 const modalBody = document.getElementById('modalBody');
 
 // Application State
+const DB_SCHEMA_VERSION = 2;
+
 let db = {
+    schemaVersion: DB_SCHEMA_VERSION,
     providers: [],    // Nombres de los prestadores (carpetas)
     practices: {},    // practices[providerName] = array of practices
     normas: {},       // normas[providerName][normalizedCode] = norma object
@@ -34,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Intentar cargar desde IndexedDB
     try {
         const savedData = await localforage.getItem('convenios_db');
-        if (savedData && savedData.providers.length > 0) {
+        if (savedData && savedData.schemaVersion === DB_SCHEMA_VERSION && savedData.providers.length > 0) {
             db = { ...db, ...savedData }; // Mezclar con valores por defecto (como currentSort)
             initDashboard();
         } else {
@@ -57,7 +60,7 @@ folderInput.addEventListener('change', async (e) => {
     showLoadingState();
     
     // Resetear base de datos manteniendo configuración de orden
-    db = { ...db, providers: [], practices: {}, normas: {} };
+    db = { ...db, schemaVersion: DB_SCHEMA_VERSION, providers: [], practices: {}, normas: {} };
     
     try {
         // Encontrar las carpetas (Prestadores)
@@ -89,7 +92,7 @@ folderInput.addEventListener('change', async (e) => {
 
         // Procesar archivos por prestador
         for (const [providerName, providerFiles] of foldersMap) {
-            const practicesMap = new Map();
+            const practices = [];
             db.normas[providerName] = {};
 
             for (const file of providerFiles) {
@@ -127,21 +130,13 @@ folderInput.addEventListener('change', async (e) => {
                             row.deno = deno;
                             row.ambu_inter_clean = ambuInter;
                             
-                            const existing = practicesMap.get(prestac);
-                            if (existing) {
-                                // Si ya existe y el nuevo es 'I', lo reemplazamos (priorizamos Internación)
-                                if (ambuInter === 'I' && existing.ambu_inter_clean !== 'I') {
-                                    practicesMap.set(prestac, row);
-                                }
-                            } else {
-                                practicesMap.set(prestac, row);
-                            }
+                            practices.push(row);
                         }
                     });
                 }
             }
-            // Guardar el array final sin duplicados
-            db.practices[providerName] = Array.from(practicesMap.values());
+            // Cada fila representa una entrada del convenio, incluso si comparte código con otra.
+            db.practices[providerName] = practices;
         }
 
         // Guardar en IndexedDB para futuras visitas
@@ -430,8 +425,8 @@ function parseCSV(file) {
 
 function normalizeCode(code) {
     if (!code) return '';
-    // Remover espacios y ceros a la izquierda para comparar ' 030202' y '30202' igual
-    return String(code).trim().replace(/^0+/, '').trim();
+    // Los ceros iniciales forman parte del código y evitan asociar una norma a otra práctica.
+    return String(code).trim();
 }
 
 function removeAccents(str) {
